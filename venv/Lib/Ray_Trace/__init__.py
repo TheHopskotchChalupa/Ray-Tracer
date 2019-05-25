@@ -1,6 +1,6 @@
 import sys
 import math
-from typing import NamedTuple
+import random
 '''
 
 ##original ppm generaotr##
@@ -216,25 +216,49 @@ def color(r, world: hitable):
         t = 0.5 * (unit_direction.y + 1.0)
         return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0)
 
-nx = 1000
-ny = 500
-output = open("test.ppm", "w+")
-output.write("P3\n%i %i\n255\n" %(nx, ny))
+class camera:
+    lower_left_corner = vec3(-2.0, -1.0, -1.0)
+    horizontal = vec3(4.0, 0.0, 0.0)
+    vertical = vec3(0.0, 2.0, 0.0)
+    origin = vec3(0.0, 0.0, 0.0)
+
+    def __init__(self):
+        lower_left_corner = vec3(-2.0, -1.0, -1.0)
+        horizontal = vec3(4.0, 0.0, 0.0)
+        vertical = vec3(0.0, 2.0, 0.0)
+        origin = vec3(0.0, 0.0, 0.0)
+
+    def get_ray(self, u: float, v: float):
+        return ray(self.origin, self.lower_left_corner
+                   + u * self.horizontal + v * self.vertical
+                   - self.origin)
+
+nx = 200
+ny = 100
+nz = 100
 lower_left_corner = vec3(-2.0, -1.0, -1.0)
 horizontal = vec3(4.0, 0.0, 0.0)
 vertical = vec3(0.0, 2.0, 0.0)
 origin = vec3(0.0, 0.0, 0.0)
+output = open("test.ppm", "w+")
+output.write("P3\n%i %i\n255\n" %(nx, ny))
 list = []
 list.insert(0, sphere(vec3(0, 0, -1), 0.5))
 list.insert(1, sphere(vec3(0, -100.5, -1), 100))
 world = hitable_list(list, 2)
-for j in range(ny-1, -1, -1):
-    for i in range(0, nx, 1):
-        u = float(i) / float(nx)
-        v = float(j) / float(ny)
-        r = ray(origin, lower_left_corner + u * horizontal + v * vertical)
-        p = r.point_at_parameter(2.0)
-        col = color(r, world)
+cam = camera()
+for i in range(ny-1, -1, -1):
+    for j in range(0, nx, 1):
+        col = vec3(0, 0, 0)
+        for k in range(0, nz, 1):
+            u = float(j + random.random()) / float(nx)
+            v = float(i + random.random()) / float(ny)
+            r = ray(origin, lower_left_corner
+                   + u * horizontal + v * vertical
+                   - origin)
+            p = r.point_at_parameter(2.0)
+            col += color(r, world)
+        col /= float(nz)
         ir = int(255.99 * col.x)
         ig = int(255.99 * col.y)
         ib = int(255.99 * col.z)
