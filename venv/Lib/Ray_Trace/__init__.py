@@ -1,6 +1,7 @@
 import sys
 import math
 import random
+import time
 '''
 
 ##original ppm generaotr##
@@ -205,12 +206,22 @@ class hitable_list(hitable):
                 rec.normal = temp_rec.normal
         return hit_anything
 
+def random_in_unit_sphere():
+    p = vec3()
+
+    p = 2.0 * vec3(random.random(), random.random(), random.random()) - vec3(1,1,1)
+    while(p & p >= 1.0):
+        p = 2.0 * vec3(random.random(), random.random(), random.random()) - vec3(1,1,1)
+
+    return p
 
 def color(r, world: hitable):
     rec = hit_record()
     #t = hit_sphere(vec3(0,0,-1), 0.5 , r)
-    if (world.hit(r, 0.0, sys.float_info.max, rec)):
-        return 0.5 * vec3(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1)
+    if (world.hit(r, 0.001, sys.float_info.max, rec)):
+        target = rec.p + rec.normal + random_in_unit_sphere()
+        return 0.5 * color(ray(rec.p, target - rec.p), world)
+        #return 0.5 * vec3(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1)
     else:
         unit_direction = unit_vector(r.direction())
         t = 0.5 * (unit_direction.y + 1.0)
@@ -232,10 +243,10 @@ class camera:
         return ray(self.origin, self.lower_left_corner
                    + u * self.horizontal + v * self.vertical
                    - self.origin)
-
-nx = 200
-ny = 100
-nz = 100
+start = time.time()
+nx = 600
+ny = 300
+nz = 300
 lower_left_corner = vec3(-2.0, -1.0, -1.0)
 horizontal = vec3(4.0, 0.0, 0.0)
 vertical = vec3(0.0, 2.0, 0.0)
@@ -259,9 +270,11 @@ for i in range(ny-1, -1, -1):
             p = r.point_at_parameter(2.0)
             col += color(r, world)
         col /= float(nz)
+        col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
         ir = int(255.99 * col.x)
         ig = int(255.99 * col.y)
         ib = int(255.99 * col.z)
         output.write("%i %i %i\n" %(ir, ig, ib))
 
 output.close()
+print("Completed in %.2f seconds" %(time.time() - start))
