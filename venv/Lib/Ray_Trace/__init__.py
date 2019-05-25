@@ -140,10 +140,18 @@ def hit_sphere(center: vec3, radius, r: ray):
     else:
         return ((-b) - (math.sqrt(discriminant))) / (2.0*a)
 
-class hit_record(NamedTuple):
-    t: float
-    p: vec3
-    normal: vec3
+class hit_record:
+    t = None
+    p = vec3()
+    normal = vec3()
+
+    def __init__(self, set_t = None, set_p = None, set_normal = None):
+        t = set_t
+        p = set_p
+        normal = set_normal
+
+    def __str__(self):
+        return '<t: %s\n p: %s\n normal: %s>' % (self.t, self.p, self.normal)
 
 class hitable:
     def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record): pass
@@ -151,47 +159,50 @@ class hitable:
 class sphere(hitable):
     center = vec3();
     radius = None
-    def __init__(self, c: vec3, r: float):
-        center = cen
-        radius = r
+    def __init__(self, cen: vec3, r: float):
+        self.center = cen
+        self.radius = r
 
-    def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record):
-        oc = r.origin() - center
+    def hit(self, r: ray, t_min: float, t_max: float, rec):
+        oc = r.origin() - self.center
         a = r.direction() & r.direction()
         b = oc & r.direction()
-        c = oc & oc - radius ** 2
+        c = (oc & oc) - self.radius * self.radius
         discriminant = b ** 2 - a * c
         if (discriminant > 0):
-            temp = float((-b - math.sqrt(b **2 - a * c)) / a)
-            if(temp < t_max & temp > t_min):
-                rec.t = temp
-                tec.p - r.point_at_parameter(rec.t)
-                rec.normal = (rec.p - center) / radius
-                return true
-            temp = (-b + math.sqrt(b ** 2 - a * c)) / a
-            if (temp < t_max & temp > t_min):
+            temp = (-b - math.sqrt(b * b - a * c)) / a
+            if ((temp < t_max) & (temp > t_min)):
                 rec.t = temp
                 rec.p = r.point_at_parameter(rec.t)
-                rec.normal = (rec.p - center) / radius
-                return true
-        return false
+                rec.normal = (rec.p - self.center) / self.radius
+                return True
+            temp = (-b + math.sqrt(b * b - a * c)) / a
+            if ((temp < t_max) & (temp > t_min)):
+                rec.t = temp
+                rec.p = r.point_at_parameter(rec.t)
+                rec.normal = (rec.p - self.center) / self.radius
+                return True
+        return False
 
 class hitable_list(hitable):
     list = None
-    list_size = None
+    list_size = 0
+
     def __init__(self, l: hitable, n: int):
-        list = []
-        list_size = n
+        self.list = []
+        self.list_size = n
 
     def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record):
         temp_rec = hit_record()
-        hit_anything = false
+        hit_anything = False
         closest_so_far = t_max
-        for i in range(list_size, 0):
+        for i in range(0, self.list_size, 1):
             if(list[i].hit(r, t_min, closest_so_far, temp_rec)):
-                hit_anything = true
+                hit_anything = True
                 closest_so_far= temp_rec.t
-                rec = temp_rec
+                rec.t = temp_rec.t
+                rec.p = temp_rec.p
+                rec.normal = temp_rec.normal
         return hit_anything
 
 
@@ -205,24 +216,25 @@ def color(r, world: hitable):
         t = 0.5 * (unit_direction.y + 1.0)
         return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0)
 
-nx = 200
-ny = 100
+nx = 1000
+ny = 500
 output = open("test.ppm", "w+")
 output.write("P3\n%i %i\n255\n" %(nx, ny))
 lower_left_corner = vec3(-2.0, -1.0, -1.0)
 horizontal = vec3(4.0, 0.0, 0.0)
 vertical = vec3(0.0, 2.0, 0.0)
 origin = vec3(0.0, 0.0, 0.0)
-list = hitable[2]
-list[0] = sphere(vec3(0, 0, -1), 0.5)
-list[1] = sphere(vec3(0, -100.5, -1), 100)
-hitable world = new hitable_list(list, 2)
+list = []
+list.insert(0, sphere(vec3(0, 0, -1), 0.5))
+list.insert(1, sphere(vec3(0, -100.5, -1), 100))
+world = hitable_list(list, 2)
 for j in range(ny-1, -1, -1):
     for i in range(0, nx, 1):
         u = float(i) / float(nx)
         v = float(j) / float(ny)
         r = ray(origin, lower_left_corner + u * horizontal + v * vertical)
-        col = color(r)
+        p = r.point_at_parameter(2.0)
+        col = color(r, world)
         ir = int(255.99 * col.x)
         ig = int(255.99 * col.y)
         ib = int(255.99 * col.z)
