@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fd676ce0-9ad5-42de-985b-e0c0d8ca061a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/vec3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" afterDir="false" />
@@ -17,10 +18,44 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="701">
-              <caret line="271" column="24" selection-start-line="271" selection-start-column="24" selection-end-line="271" selection-end-column="24" />
+            <state relative-caret-position="706">
+              <caret line="205" column="61" lean-forward="true" selection-start-line="194" selection-start-column="8" selection-end-line="205" selection-end-column="61" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#2926#3206#0" />
+                <element signature="e#3315#3599#0" />
+                <element signature="e#5705#5940#0" />
+                <element signature="e#6099#6633#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="368">
+              <caret line="1757" selection-start-line="1757" selection-end-line="1757" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/vec3.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret line="68" column="73" selection-start-line="68" selection-start-column="73" selection-end-line="68" selection-end-column="73" />
+              <folding>
+                <element signature="e#16#1748#0" />
               </folding>
             </state>
           </provider>
@@ -38,7 +73,18 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>triple</find>
+      <find>vec3()</find>
+      <find>vec3()</find>
+      <find>hitable</find>
+      <find>targe</find>
+      <find>scatt</find>
+      <find>scatte</find>
       <find>prin</find>
+      <find>*</find>
+      <find>#</find>
+      <find>**</find>
+      <find>1</find>
+      <find>5</find>
       <find>print</find>
     </findStrings>
   </component>
@@ -49,6 +95,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/venv/Lib/Ray_Trace/vec3.py" />
+        <option value="$PROJECT_DIR$/venv/Lib/Ray_Trace/shapes.py" />
+        <option value="$PROJECT_DIR$/venv/Lib/Ray_Trace/hitable.py" />
         <option value="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" />
       </list>
     </option>
@@ -63,75 +112,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ray Trace" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ray Trace" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ray Trace" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
-              <item name="Lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ray Trace" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
-              <item name="Lib" type="462c0819:PsiDirectoryNode" />
-              <item name="Ray_Trace" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Ray Trace" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
-              <item name="Lib" type="462c0819:PsiDirectoryNode" />
-              <item name="site-packages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 (Ray Trace) &gt;" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 (Ray Trace) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="venv" type="b5f07198:RTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 (Ray Trace) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="venv" type="b5f07198:RTreeStructureProvider$1" />
-              <item name="Lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Ray Trace" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 (Ray Trace) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="venv" type="b5f07198:RTreeStructureProvider$1" />
-              <item name="Lib" type="462c0819:PsiDirectoryNode" />
-              <item name="Ray_Trace" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -192,7 +173,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.3665208" />
@@ -200,7 +181,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32932165" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3261105" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39934355" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -217,12 +198,43 @@
     </layout>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/hitable.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/vec3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="68" column="73" selection-start-line="68" selection-start-column="73" selection-end-line="68" selection-end-column="73" />
+          <folding>
+            <element signature="e#16#1748#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="1757" selection-start-line="1757" selection-end-line="1757" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="701">
-          <caret line="271" column="24" selection-start-line="271" selection-start-column="24" selection-end-line="271" selection-end-column="24" />
+        <state relative-caret-position="706">
+          <caret line="205" column="61" lean-forward="true" selection-start-line="194" selection-start-column="8" selection-end-line="205" selection-end-column="61" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#2926#3206#0" />
+            <element signature="e#3315#3599#0" />
+            <element signature="e#5705#5940#0" />
+            <element signature="e#6099#6633#0" />
           </folding>
         </state>
       </provider>

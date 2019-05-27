@@ -2,49 +2,7 @@ import sys
 import math
 import random
 import time
-'''
 
-##original ppm generaotr##
-nx = 200
-ny = 100
-output = open("test.ppm", "w+")
-output.write("P3\n%i %i\n255\n" %(nx, ny))
-for i in range(ny-1, -1, -1):
-    for j in range(0, nx, 1):
-        col = vec3(float(j)/float(nx), float(i)/float(ny), 0.2)
-        ir = int(255.9 * col.x)
-        ig = int(255.9 * col.y)
-        ib = int(255.9 * col.z)
-        output.write("%i %i %i\n" %(ir, ig, ib))
-
-output.close
-
-##old vec3##
-class vec3:
-    e = [3]
-
-    def vec3(): e = None
-    def vec3(e0, e1, e2):
-        e[0] = e0
-        e[1] = e1
-        e[2] = e2
-
-    def x(): return e[0]
-    def y(): return e[1]
-    def z(): return e[2]
-    def r(): return e[0]
-    def g(): return e[1]
-    def b(): return e[2]
-
-    def __add__(): return self
-    def __sub__(): return vec3(-e[0], -e[1], -e[2])
-    def __getitem__(i): return e[i]
-
-    def length():
-        return sqrt(e[0]*e[0] + e[1]*e[1] + e[2]*e[2])
-    def squared_length(): return e[0]*e[0] + e[1]*e[1] + e[2]*e[2]
-    def make_unit_vector(): pass
-'''
 #vec3 is a modified copy of the TripleVecotr class by davidnuon from https://gist.github.com/davidnuon/3816736
 class vec3:
     x = 0
@@ -119,7 +77,7 @@ class vec3:
 class ray:
     point_a = vec3()
     point_b = vec3()
-    def __init__(self, a, b):
+    def __init__(self, a = None, b = None):
         self.point_a = a
         self.point_b = b
     def origin(self): return self.point_a
@@ -141,18 +99,113 @@ def hit_sphere(center: vec3, radius, r: ray):
     else:
         return ((-b) - (math.sqrt(discriminant))) / (2.0*a)
 
+class material:
+
+    def scatter(self, r_in: ray, rec, attenuation: vec3, scattered: ray):
+        return
+
 class hit_record:
     t = None
     p = vec3()
     normal = vec3()
+    mat = material()
 
-    def __init__(self, set_t = None, set_p = None, set_normal = None):
-        t = set_t
-        p = set_p
-        normal = set_normal
+    def __init__(self, set_t = None, set_p = None, set_normal = None, set_mat = None):
+        self.t = set_t
+        self.p = set_p
+        self.normal = set_normal
+        self.mat = set_mat
 
     def __str__(self):
-        return '<t: %s\n p: %s\n normal: %s>' % (self.t, self.p, self.normal)
+        return '<t: %s\n p: %s\n normal: %s\n material: %s >' % (self.t, self.p, self.normal, self.mat)
+
+def reflect(v: vec3, n: vec3):
+    return v - 2 * (v & n) * n
+
+def refract(v, n, ni_over_nt, refracted):
+    uv = unit_vector(v)
+    dt = uv & n
+    discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt)
+    if (discriminant > 0):
+        refracted = ni_over_nt * (uv - n * dt) - n * math.sqrt(discriminant)
+        return True
+    else:
+        return False
+
+def schlick(cosine, ref):
+    r0 = (1-ref) / (1+ref)
+    r0 = r0 * r0
+    return r0 + (1-r0) * ((1 - cosine) ** 5)
+
+class lambertian(material):
+    albedo = vec3()
+
+    def __init__(self, a: vec3): self.albedo = a
+
+    def scatter(self, r_in: ray, rec, attenuation: vec3, scattered: ray):
+        scattered.point_a = ray(rec.p, rec.p + rec.normal + random_in_unit_sphere() - rec.p).point_a
+        scattered.point_b = ray(rec.p, rec.p + rec.normal + random_in_unit_sphere() - rec.p).point_b
+        attenuation.x = self.albedo.x
+        attenuation.y = self.albedo.y
+        attenuation.z = self.albedo.z
+        return True
+
+class metal(material):
+    albedo = vec3()
+    fuzz = None
+
+    def __init__(self, a: vec3, f):
+        self.albedo = a
+        if (f < 1): self.fuzz = f
+        else: self.fuzz = 1
+
+    def scatter(self, r_in: ray, rec, attenuation: vec3, scattered: ray):
+        reflected = reflect(unit_vector(r_in.direction()), rec.normal)
+        scattered.point_a = ray(rec.p, reflected + self.fuzz * random_in_unit_sphere()).point_a
+        scattered.point_b = ray(rec.p, reflected + self.fuzz * random_in_unit_sphere()).point_b
+        attenuation.x = self.albedo.x
+        attenuation.y = self.albedo.y
+        attenuation.z = self.albedo.z
+        return ((scattered.direction() & rec.normal) > 0)
+
+class dielectric(material):
+    ref = None
+
+    def __init__(self, ri): self.ref = ri
+
+    def scatter(self, r_in: ray, rec, attenuation: vec3, scattered: ray):
+        outward_normal = vec3()
+        reflected = reflect(r_in.direction(), rec.normal)
+        ni_over_nt = None
+        attenuation.x = 1.0
+        attenuation.y = 1.0
+        attenuation.z = 1.0
+        refracted = vec3()
+        reflect_prob = None
+        cosine = None
+        if ((r_in.direction() & (rec.normal)) > 0):
+            print("Here")
+            outward_normal = -(rec.normal)
+            ni_over_nt = self.ref
+            cosine = self.ref * (r_in.direction() & rec.normal) / r_in.direction().length()
+        else:
+            outward_normal = rec.normal
+            ni_over_nt = 1.0 / self.ref
+            cosine = -(r_in.direction() & rec.normal) / r_in.direction().length()
+        if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)):
+            reflect_prob = schlick(cosine, self.ref)
+        else:
+            scattered.point_a = ray(rec.p, reflected).point_a
+            scattered.point_b = ray(rec.p, reflected).point_b
+            reflect_prob = 1.0
+        if (random.random() < reflect_prob):
+            scattered.point_a = ray(rec.p, reflected).point_a
+            scattered.point_b = ray(rec.p, reflected).point_b
+        else:
+            scattered.point_a = ray(rec.p, reflected).point_a
+            scattered.point_b = ray(rec.p, reflected).point_b
+        return True
+
 
 class hitable:
     def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record): pass
@@ -160,9 +213,12 @@ class hitable:
 class sphere(hitable):
     center = vec3();
     radius = None
-    def __init__(self, cen: vec3, r: float):
+    mat = material()
+
+    def __init__(self, cen: vec3, r: float, m: material):
         self.center = cen
         self.radius = r
+        self.mat = m
 
     def hit(self, r: ray, t_min: float, t_max: float, rec):
         oc = r.origin() - self.center
@@ -190,7 +246,7 @@ class hitable_list(hitable):
     list_size = 0
 
     def __init__(self, l: hitable, n: int):
-        self.list = []
+        self.list = l
         self.list_size = n
 
     def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record):
@@ -204,6 +260,7 @@ class hitable_list(hitable):
                 rec.t = temp_rec.t
                 rec.p = temp_rec.p
                 rec.normal = temp_rec.normal
+                rec.mat = list[i].mat
         return hit_anything
 
 def random_in_unit_sphere():
@@ -215,13 +272,15 @@ def random_in_unit_sphere():
 
     return p
 
-def color(r, world: hitable):
+def color(r, world: hitable, depth):
     rec = hit_record()
-    #t = hit_sphere(vec3(0,0,-1), 0.5 , r)
     if (world.hit(r, 0.001, sys.float_info.max, rec)):
-        target = rec.p + rec.normal + random_in_unit_sphere()
-        return 0.5 * color(ray(rec.p, target - rec.p), world)
-        #return 0.5 * vec3(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1)
+        scattered = ray()
+        attenuation = vec3()
+        if ((depth < 50) & (rec.mat.scatter(r, rec, attenuation, scattered))):
+            return attenuation * color(scattered, world, depth + 1).x
+        else:
+            return vec3(0, 0, 0)
     else:
         unit_direction = unit_vector(r.direction())
         t = 0.5 * (unit_direction.y + 1.0)
@@ -243,20 +302,24 @@ class camera:
         return ray(self.origin, self.lower_left_corner
                    + u * self.horizontal + v * self.vertical
                    - self.origin)
+
 start = time.time()
-nx = 600
-ny = 300
-nz = 300
+nx = 60
+ny = 30
+nz = 30
 lower_left_corner = vec3(-2.0, -1.0, -1.0)
 horizontal = vec3(4.0, 0.0, 0.0)
 vertical = vec3(0.0, 2.0, 0.0)
 origin = vec3(0.0, 0.0, 0.0)
-output = open("test.ppm", "w+")
-output.write("P3\n%i %i\n255\n" %(nx, ny))
+write = True
+if(write): output = open("test.ppm", "w+")
+if(write): output.write("P3\n%i %i\n255\n" %(nx, ny))
 list = []
-list.insert(0, sphere(vec3(0, 0, -1), 0.5))
-list.insert(1, sphere(vec3(0, -100.5, -1), 100))
-world = hitable_list(list, 2)
+world = hitable_list(list, 4)
+world.list.insert(0, sphere(vec3(0, 0, -1), 0.5, lambertian(vec3(0.8, 0.3, 0.3))))
+world.list.insert(1, sphere(vec3(0, -100.5, -1), 100, lambertian(vec3(0.8, 0.8, 0.0))))
+world.list.insert(2, sphere(vec3(1, 0, -1), 0.5, metal(vec3(0.8, 0.6, 0.2), 0.0)))
+world.list.insert(3, sphere(vec3(-1, 0, -1), 0.5, dielectric(1.5)))
 cam = camera()
 for i in range(ny-1, -1, -1):
     for j in range(0, nx, 1):
@@ -268,13 +331,13 @@ for i in range(ny-1, -1, -1):
                    + u * horizontal + v * vertical
                    - origin)
             p = r.point_at_parameter(2.0)
-            col += color(r, world)
+            col += color(r, world, 0)
         col /= float(nz)
         col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
         ir = int(255.99 * col.x)
         ig = int(255.99 * col.y)
         ib = int(255.99 * col.z)
-        output.write("%i %i %i\n" %(ir, ig, ib))
+        if(write): output.write("%i %i %i\n" %(ir, ig, ib))
 
-output.close()
+if(write): output.close()
 print("Completed in %.2f seconds" %(time.time() - start))
