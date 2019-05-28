@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fd676ce0-9ad5-42de-985b-e0c0d8ca061a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/vec3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" afterDir="false" />
     </list>
@@ -18,14 +16,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="706">
-              <caret line="205" column="61" lean-forward="true" selection-start-line="194" selection-start-column="8" selection-end-line="205" selection-end-column="61" />
+            <state relative-caret-position="272">
+              <caret line="325" selection-start-line="325" selection-end-line="325" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <element signature="e#2926#3206#0" />
                 <element signature="e#3315#3599#0" />
-                <element signature="e#5705#5940#0" />
-                <element signature="e#6099#6633#0" />
               </folding>
             </state>
           </provider>
@@ -117,7 +113,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Git/cmd/git.exe" />
-    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -173,7 +169,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.3665208" />
@@ -181,7 +177,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3261105" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32603937" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39934355" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -196,6 +192,17 @@
       <window_info anchor="right" id="R Graphics" order="3" />
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py</url>
+          <line>297</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/hitable.py">
@@ -227,14 +234,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="706">
-          <caret line="205" column="61" lean-forward="true" selection-start-line="194" selection-start-column="8" selection-end-line="205" selection-end-column="61" />
+        <state relative-caret-position="272">
+          <caret line="325" selection-start-line="325" selection-end-line="325" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <element signature="e#2926#3206#0" />
             <element signature="e#3315#3599#0" />
-            <element signature="e#5705#5940#0" />
-            <element signature="e#6099#6633#0" />
           </folding>
         </state>
       </provider>

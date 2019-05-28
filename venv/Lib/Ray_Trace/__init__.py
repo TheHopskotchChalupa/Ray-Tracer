@@ -2,6 +2,8 @@ import sys
 import math
 import random
 import time
+import numba
+import numpy
 
 #vec3 is a modified copy of the TripleVecotr class by davidnuon from https://gist.github.com/davidnuon/3816736
 class vec3:
@@ -184,7 +186,6 @@ class dielectric(material):
         reflect_prob = None
         cosine = None
         if ((r_in.direction() & (rec.normal)) > 0):
-            print("Here")
             outward_normal = -(rec.normal)
             ni_over_nt = self.ref
             cosine = self.ref * (r_in.direction() & rec.normal) / r_in.direction().length()
@@ -205,7 +206,6 @@ class dielectric(material):
             scattered.point_a = ray(rec.p, reflected).point_a
             scattered.point_b = ray(rec.p, reflected).point_b
         return True
-
 
 class hitable:
     def hit(self, r: ray, t_min: float, t_max: float, rec: hit_record): pass
@@ -253,14 +253,14 @@ class hitable_list(hitable):
         temp_rec = hit_record()
         hit_anything = False
         closest_so_far = t_max
-        for i in range(0, self.list_size, 1):
-            if(list[i].hit(r, t_min, closest_so_far, temp_rec)):
+        for i in range(0, self.list_size - 1, 1):
+            if(self.list[i].hit(r, t_min, closest_so_far, temp_rec)):
                 hit_anything = True
                 closest_so_far= temp_rec.t
                 rec.t = temp_rec.t
                 rec.p = temp_rec.p
                 rec.normal = temp_rec.normal
-                rec.mat = list[i].mat
+                rec.mat = self.list[i].mat
         return hit_anything
 
 def random_in_unit_sphere():
@@ -269,6 +269,15 @@ def random_in_unit_sphere():
     p = 2.0 * vec3(random.random(), random.random(), random.random()) - vec3(1,1,1)
     while(p & p >= 1.0):
         p = 2.0 * vec3(random.random(), random.random(), random.random()) - vec3(1,1,1)
+
+    return p
+
+def random_in_unit_disk():
+    p = vec3()
+
+    p = 2.0 * vec3(random.random(), random.random(), 0) - vec3(1, 1, 0)
+    while (p & p >= 1.0):
+        p = 2.0 * vec3(random.random(), random.random(), 0) - vec3(1, 1, 0)
 
     return p
 
@@ -287,57 +296,110 @@ def color(r, world: hitable, depth):
         return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0)
 
 class camera:
+    u = v = w = None
+    lower_left_corner = None
+    horizontal = None
+    vertical = None
+    origin = None
+    lens_radius = None
+
+    def __init__(self, lookfrom, lookat, vup, vfov, aspect, aperture, focus_dist):
+        self.lens_radius = aperture / 2
+        theta = vfov * math.pi/180
+        half_height = math.tan(theta/2)
+        half_width = aspect * half_height
+        self.origin = lookfrom
+        self.w = unit_vector(lookfrom - lookat)
+        self.u = unit_vector(vup ** self.w)
+        self.v = self.w ** self.u
+        self.lower_left_corner = self.origin - half_width * focus_dist \
+                                 * self.u - half_height * focus_dist * self.v - focus_dist * self.w
+        self.horizontal = 2 * half_width * focus_dist * self.u
+        self.vertical = 2 * half_height * focus_dist * self.v
+
+    def get_ray(self, s: float, t: float):
+        rd = self.lens_radius * random_in_unit_disk()
+        offset = self.u * rd.x + self.v * rd.y
+        return ray(self.origin + offset, self.lower_left_corner
+                   + s * self.horizontal + t * self.vertical - self.origin - offset)
+
+
+def random_scene():
+    list = []
+    list.insert(0, sphere(vec3(0, -1000, 0), 1000, lambertian(vec3(0.5, 0.5, 0.5))))
+    i = 1
+    for a in range(0, 22):
+        for b in range(0, 22):
+            choose_mat = random.random()
+            center = vec3(a + 0.9 * random.random(), 0.2, b + 0.9 * random.random())
+            if ((center - vec3(4, 0.2, 0)).length() > 0.9):
+                if (choose_mat < 0.8):
+                    x = random.random() * random.random()
+                    y = random.random() * random.random()
+                    z = random.random() * random.random()
+                    list.insert(i, sphere(center, 0.2, lambertian(vec3(x, y, z))))
+                elif (choose_mat < 0.95):
+                    x = 0.5 * (1 + random.random())
+                    y = 0.5 * (1 + random.random())
+                    z = 0.5 * (1 + random.random())
+                    f = 0.5 * (1 + random.random())
+                    list.insert(i, sphere(center, 0.2,
+                            metal(vec3(x, y, z), f)))
+                else:
+                    list.insert(i, sphere(center, 0.2, dielectric(1.5)))
+            i = i + 1
+
+    i += 1
+    list.insert(i, sphere(vec3(0, 1, 0), 1.0, dielectric(1.5)))
+    i += 1
+    list.insert(i, sphere(vec3(-4, 1, 0), 1.0, lambertian(vec3(0.4, 0.2, 0.1))))
+    i += 1
+    list.insert(i, sphere(vec3(4, 1, 0), 1.0, metal(vec3(0.7, 0.6, 0.5), 0.0)))
+
+    return hitable_list(list, i - 1)
+
+def run():
+    start = time.time()
+    nx = 20
+    ny = 10
+    nz = 10
+    '''
     lower_left_corner = vec3(-2.0, -1.0, -1.0)
     horizontal = vec3(4.0, 0.0, 0.0)
     vertical = vec3(0.0, 2.0, 0.0)
     origin = vec3(0.0, 0.0, 0.0)
+    '''
 
-    def __init__(self):
-        lower_left_corner = vec3(-2.0, -1.0, -1.0)
-        horizontal = vec3(4.0, 0.0, 0.0)
-        vertical = vec3(0.0, 2.0, 0.0)
-        origin = vec3(0.0, 0.0, 0.0)
+    output = open("test.ppm", "w+")
+    output.write("P3\n%i %i\n255\n" %(nx, ny))
+    list = []
+    world = random_scene()
+    '''
+    world.list.insert(0, sphere(vec3(0, 0, -1), 0.5, lambertian(vec3(0, 0, 1))))
+    world.list.insert(1, sphere(vec3(0, -100.5, -1), 100, lambertian(vec3(0.8, 0.8, 0.0))))
+    world.list.insert(2, sphere(vec3(-1, 0, -1), 0.5, metal(vec3(0.8, 0.6, 0.2), 0)))
+    world.list.insert(3, sphere(vec3(1, 0, -1), 0.5, dielectric(1.5)))
+    '''
+    lookfrom = vec3(3, 3, 2)
+    lookat = vec3(0, 0, -1)
+    cam = camera(lookfrom, lookat, vec3(0, 1, 0), 100, nx/ny, 2.0, (lookfrom - lookat).length())
+    for i in range(ny-1, -1, -1):
+        for j in range(0, nx, 1):
+            col = vec3(0, 0, 0)
+            for k in range(0, nz, 1):
+                u = float(j + random.random()) / float(nx)
+                v = float(i + random.random()) / float(ny)
+                r = cam.get_ray(u, v)
+                p = r.point_at_parameter(2.0)
+                col += color(r, world, 0)
+            col /= float(nz)
+            col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
+            ir = int(255.99 * col.x)
+            ig = int(255.99 * col.y)
+            ib = int(255.99 * col.z)
+            output.write("%i %i %i\n" %(ir, ig, ib))
 
-    def get_ray(self, u: float, v: float):
-        return ray(self.origin, self.lower_left_corner
-                   + u * self.horizontal + v * self.vertical
-                   - self.origin)
+    output.close()
+    print("Completed in %.2f seconds" %(time.time() - start))
 
-start = time.time()
-nx = 60
-ny = 30
-nz = 30
-lower_left_corner = vec3(-2.0, -1.0, -1.0)
-horizontal = vec3(4.0, 0.0, 0.0)
-vertical = vec3(0.0, 2.0, 0.0)
-origin = vec3(0.0, 0.0, 0.0)
-write = True
-if(write): output = open("test.ppm", "w+")
-if(write): output.write("P3\n%i %i\n255\n" %(nx, ny))
-list = []
-world = hitable_list(list, 4)
-world.list.insert(0, sphere(vec3(0, 0, -1), 0.5, lambertian(vec3(0.8, 0.3, 0.3))))
-world.list.insert(1, sphere(vec3(0, -100.5, -1), 100, lambertian(vec3(0.8, 0.8, 0.0))))
-world.list.insert(2, sphere(vec3(1, 0, -1), 0.5, metal(vec3(0.8, 0.6, 0.2), 0.0)))
-world.list.insert(3, sphere(vec3(-1, 0, -1), 0.5, dielectric(1.5)))
-cam = camera()
-for i in range(ny-1, -1, -1):
-    for j in range(0, nx, 1):
-        col = vec3(0, 0, 0)
-        for k in range(0, nz, 1):
-            u = float(j + random.random()) / float(nx)
-            v = float(i + random.random()) / float(ny)
-            r = ray(origin, lower_left_corner
-                   + u * horizontal + v * vertical
-                   - origin)
-            p = r.point_at_parameter(2.0)
-            col += color(r, world, 0)
-        col /= float(nz)
-        col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
-        ir = int(255.99 * col.x)
-        ig = int(255.99 * col.y)
-        ib = int(255.99 * col.z)
-        if(write): output.write("%i %i %i\n" %(ir, ig, ib))
-
-if(write): output.close()
-print("Completed in %.2f seconds" %(time.time() - start))
+run()
