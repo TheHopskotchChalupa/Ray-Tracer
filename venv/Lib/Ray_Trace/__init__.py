@@ -357,9 +357,9 @@ def random_scene():
 #@numba.jit(nopython=True, parallel=True)
 def run():
     start = time.time()
-    nx = 20
-    ny = 10
-    nz = 10
+    nx = 540
+    ny = 270
+    nz = 270
     '''
     lower_left_corner = vec3(-2.0, -1.0, -1.0)
     horizontal = vec3(4.0, 0.0, 0.0)
