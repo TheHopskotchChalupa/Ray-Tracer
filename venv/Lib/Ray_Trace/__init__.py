@@ -2,8 +2,6 @@ import sys
 import math
 import random
 import time
-import numba
-import numpy
 
 #vec3 is a modified copy of the TripleVecotr class by davidnuon from https://gist.github.com/davidnuon/3816736
 class vec3:
@@ -323,7 +321,6 @@ class camera:
         return ray(self.origin + offset, self.lower_left_corner
                    + s * self.horizontal + t * self.vertical - self.origin - offset)
 
-
 def random_scene():
     list = []
     list.insert(0, sphere(vec3(0, -1000, 0), 1000, lambertian(vec3(0.5, 0.5, 0.5))))
@@ -331,8 +328,9 @@ def random_scene():
     for a in range(0, 22):
         for b in range(0, 22):
             choose_mat = random.random()
-            center = vec3(a + 0.9 * random.random(), 0.2, b + 0.9 * random.random())
+            center = vec3((a + 0.9 * random.random()) - 11, 0.2, (b + 0.9 * random.random()) - 11)
             if ((center - vec3(4, 0.2, 0)).length() > 0.9):
+                i = i + 1
                 if (choose_mat < 0.8):
                     x = random.random() * random.random()
                     y = random.random() * random.random()
@@ -347,17 +345,16 @@ def random_scene():
                             metal(vec3(x, y, z), f)))
                 else:
                     list.insert(i, sphere(center, 0.2, dielectric(1.5)))
-            i = i + 1
 
+    i = i + 1
+    list.insert(i, sphere(vec3(0, 1, 0), 1.5, dielectric(1.5)))
     i += 1
-    list.insert(i, sphere(vec3(0, 1, 0), 1.0, dielectric(1.5)))
+    list.insert(i, sphere(vec3(-3, 1, 0), 2.0, lambertian(vec3(0.1, 0.1, 1))))
     i += 1
-    list.insert(i, sphere(vec3(-4, 1, 0), 1.0, lambertian(vec3(0.4, 0.2, 0.1))))
-    i += 1
-    list.insert(i, sphere(vec3(4, 1, 0), 1.0, metal(vec3(0.7, 0.6, 0.5), 0.0)))
+    list.insert(i, sphere(vec3(3, 1, 0), 1.0, metal(vec3(0.7, 0.6, 0.5), 0.0)))
 
-    return hitable_list(list, i - 1)
-
+    return hitable_list(list, i)
+#@numba.jit(nopython=True, parallel=True)
 def run():
     start = time.time()
     nx = 20
@@ -380,9 +377,16 @@ def run():
     world.list.insert(2, sphere(vec3(-1, 0, -1), 0.5, metal(vec3(0.8, 0.6, 0.2), 0)))
     world.list.insert(3, sphere(vec3(1, 0, -1), 0.5, dielectric(1.5)))
     '''
-    lookfrom = vec3(3, 3, 2)
-    lookat = vec3(0, 0, -1)
-    cam = camera(lookfrom, lookat, vec3(0, 1, 0), 100, nx/ny, 2.0, (lookfrom - lookat).length())
+    lookfrom = vec3(3, 2, 3)
+    lookat = vec3(0, 0, 0)
+    cam = camera(lookfrom, lookat,  vec3(0, 1, 0), 100, nx/ny, 0.3, (lookfrom - lookat).length())
+
+    procs = []
+    proc = None
+
+    threads = []
+    thread = None
+
     for i in range(ny-1, -1, -1):
         for j in range(0, nx, 1):
             col = vec3(0, 0, 0)
@@ -391,6 +395,13 @@ def run():
                 v = float(i + random.random()) / float(ny)
                 r = cam.get_ray(u, v)
                 p = r.point_at_parameter(2.0)
+                '''
+                proc = Process(target=color, args=(r, world, 0))
+                procs.append(proc)
+                proc.start()
+                '''
+                #thread = Thread(target=lambda q, arg1: q.put(color(r, world, 0)), args=(que, 'world!'))
+                #thread = threading.Thread(target=(r, world, 0))
                 col += color(r, world, 0)
             col /= float(nz)
             col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
@@ -398,6 +409,9 @@ def run():
             ig = int(255.99 * col.y)
             ib = int(255.99 * col.z)
             output.write("%i %i %i\n" %(ir, ig, ib))
+
+    for thread in threads:
+        thread.join()
 
     output.close()
     print("Completed in %.2f seconds" %(time.time() - start))
