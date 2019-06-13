@@ -357,36 +357,20 @@ def random_scene():
 #@numba.jit(nopython=True, parallel=True)
 def run():
     start = time.time()
-    nx = 540
-    ny = 270
-    nz = 270
-    '''
-    lower_left_corner = vec3(-2.0, -1.0, -1.0)
-    horizontal = vec3(4.0, 0.0, 0.0)
-    vertical = vec3(0.0, 2.0, 0.0)
-    origin = vec3(0.0, 0.0, 0.0)
-    '''
+    nx = 720
+    ny = 360
+    nz = 360
 
     output = open("test.ppm", "w+")
     output.write("P3\n%i %i\n255\n" %(nx, ny))
     list = []
     world = random_scene()
-    '''
-    world.list.insert(0, sphere(vec3(0, 0, -1), 0.5, lambertian(vec3(0, 0, 1))))
-    world.list.insert(1, sphere(vec3(0, -100.5, -1), 100, lambertian(vec3(0.8, 0.8, 0.0))))
-    world.list.insert(2, sphere(vec3(-1, 0, -1), 0.5, metal(vec3(0.8, 0.6, 0.2), 0)))
-    world.list.insert(3, sphere(vec3(1, 0, -1), 0.5, dielectric(1.5)))
-    '''
     lookfrom = vec3(3, 2, 3)
     lookat = vec3(0, 0, 0)
     cam = camera(lookfrom, lookat,  vec3(0, 1, 0), 100, nx/ny, 0.3, (lookfrom - lookat).length())
 
-    procs = []
-    proc = None
-
-    threads = []
-    thread = None
-
+    estimated_time = 8.3 * (((nx/20) ** 3) / 60 / 60)
+    print("Started. Time to complete: %.2f hours" % estimated_time)
     for i in range(ny-1, -1, -1):
         for j in range(0, nx, 1):
             col = vec3(0, 0, 0)
@@ -395,13 +379,6 @@ def run():
                 v = float(i + random.random()) / float(ny)
                 r = cam.get_ray(u, v)
                 p = r.point_at_parameter(2.0)
-                '''
-                proc = Process(target=color, args=(r, world, 0))
-                procs.append(proc)
-                proc.start()
-                '''
-                #thread = Thread(target=lambda q, arg1: q.put(color(r, world, 0)), args=(que, 'world!'))
-                #thread = threading.Thread(target=(r, world, 0))
                 col += color(r, world, 0)
             col /= float(nz)
             col = vec3(math.sqrt(col.x), math.sqrt(col.y), math.sqrt(col.z))
@@ -410,10 +387,11 @@ def run():
             ib = int(255.99 * col.z)
             output.write("%i %i %i\n" %(ir, ig, ib))
 
-    for thread in threads:
-        thread.join()
+        percent_finished = (100 - (i / ny) * 100)
+        print("%.1f%% done. Estimated time remaining: %.16f hours\r".format() % (
+        percent_finished, (estimated_time - ((percent_finished / 100) * estimated_time))), end="\r")
 
     output.close()
-    print("Completed in %.2f seconds" %(time.time() - start))
+    print("\nCompleted in %.2f seconds" %(time.time() - start))
 
 run()

@@ -4,7 +4,6 @@
     <list default="true" id="fd676ce0-9ad5-42de-985b-e0c0d8ca061a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/Ray_Trace/test.ppm" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="359" column="11" selection-start-line="359" selection-start-column="11" selection-end-line="359" selection-end-column="11" />
+            <state relative-caret-position="522">
+              <caret line="372" column="48" selection-start-line="372" selection-start-column="48" selection-end-line="372" selection-end-column="48" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -219,8 +218,8 @@
     <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/hitable.py" />
     <entry file="file://$PROJECT_DIR$/venv/Lib/Ray_Trace/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="359" column="11" selection-start-line="359" selection-start-column="11" selection-end-line="359" selection-end-column="11" />
+        <state relative-caret-position="522">
+          <caret line="372" column="48" selection-start-line="372" selection-start-column="48" selection-end-line="372" selection-end-column="48" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
